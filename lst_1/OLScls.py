@@ -1,20 +1,22 @@
+from LinearReg import LinearReg
+import numpy as np
+import matplotlib.pyplot as plt
 class OLS(LinearReg):
-    def __init__(self,file,range_columns):
-        super().__init__(file,range_columns)
+    def __init__(self,file,test_pct):
+        super().__init__(file,test_pct)
 
     def OLS_step(self):
-        x = self.get_x(True)["x_test"]
-        y = self.get_y()["y_test"]
-        w = (np.linalg.inv(x.T @ x) @ x.T) @ y
-        y_hat = x @ w
-        mse = (np.mean((y-y_hat)**2))
+        self.xo = self.get_x()["x_test"]
+        self.x = self.get_x(True)["x_test"]
+        self.y = self.get_y()["y_test"]
+        self.w = (np.linalg.inv(self.x.T @ self.x) @ self.x.T) @ self.y
+        self.y_hat = self.x @ self.w
+        self.mse = (np.mean((self.y-self.y_hat)**2))
         plt.ylabel("Y")
         plt.xlabel("X")
-        plt.scatter(x[:,[1]],y)
-        plt.plot(x[:,[1]],y_hat)
-
+        plt.scatter(self.xo,self.y)
+        plt.plot(self.xo,self.y_hat)
         plt.gcf().canvas.set_window_title('OLS')
-
         plt.show()
 
 
