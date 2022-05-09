@@ -29,12 +29,14 @@ class GDLog(LogisticReg):
             x_train,y_train = op.slice_data(self.train)
             x_test,y_test = op.slice_data(self.test)
             y_n = y_train #op.stddize(y_test)
-            x_n = x_train #op.stddize(x_test)#nxd
+            x_n = op.stddize(x_train) #op.stddize(x_test)#nxd
             x_coTrain = op.concat_one_column(x_n)#nxd+1
-            x_coTest = op.concat_one_column(x_test)#nxd+1
+            x_coTest = op.concat_one_column(op.stddize(x_test))#nxd+1
             self.w = np.zeros((x_coTrain.shape[1],1))#d+1x1
+            #print(x_n.shape)
             while t< self.it_num:
                 t+=1
+                #print(x_train.shape)
                 y_hat = x_coTrain @ self.w      #np.array([np.sum(self.w * x_co,axis=1)]).T
                 err = y_n - op.sigmoid(y_hat)
                 self.w = self.w + self.pace*(np.array([np.mean(err*x_coTrain,axis=0)])).T
@@ -59,7 +61,7 @@ class GDLog(LogisticReg):
 
 
 def main():
-    l = GDLog("breastcancer.csv",10,0.01,1000)
+    l = GDLog("breastcancer.csv",10,0.01,100)
     l.LogStep()
     #print(l.results_vec)
 

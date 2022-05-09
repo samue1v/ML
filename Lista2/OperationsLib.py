@@ -13,9 +13,13 @@ class Operations:
     def Kfold(dataset,n_folds):
         fold_lst = []
         fold_size = int(dataset.shape[0]/n_folds)
+        fold_remainder = (dataset.shape[0]%n_folds)
+        print(fold_remainder)
         for i in range(n_folds):
             floor = i*fold_size
             fold_lst.append(dataset[floor:floor+fold_size])
+        for j in range(fold_remainder):
+            fold_lst[j] = np.r_[fold_lst[j],np.array(dataset[-j-2:-j-1,:])]
         return fold_lst
 
     @staticmethod
