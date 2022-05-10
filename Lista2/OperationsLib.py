@@ -8,6 +8,14 @@ class Operations:
         x = data[: , 0:-1]
         y= data[:, -1:]
         return x,y
+    
+    @staticmethod
+    def get_folded_data(folds,n):
+        cp = folds.copy()
+        test = cp.pop(n)
+        train = np.vstack(cp)
+        return test,train
+
 
     @staticmethod
     def Kfold(dataset,n_folds):

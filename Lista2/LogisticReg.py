@@ -6,14 +6,8 @@ class LogisticReg:
         self.dataset = np.genfromtxt(file, delimiter=',', skip_header=0)
         self.n_folds = n_folds
         self.folds = op.Kfold(self.dataset,self.n_folds)
-        self.actual_test_fold = 0
 
     
-    def get_folded_data(self):
-        cp = self.folds.copy()
-        self.test = cp.pop(self.actual_test_fold)
-        self.train = np.vstack(cp)
-        self.actual_test_fold+=1
 
 class GDLog(LogisticReg):
     def __init__(self, file, n_folds,pace,it_num):
@@ -25,9 +19,9 @@ class GDLog(LogisticReg):
     def LogStep(self):
         for i in range(self.n_folds):
             t=0
-            self.get_folded_data()
-            x_train,y_train = op.slice_data(self.train)
-            x_test,y_test = op.slice_data(self.test)
+            test,train = op.get_folded_data(self.folds,i)
+            x_train,y_train = op.slice_data(train)
+            x_test,y_test = op.slice_data(test)
             y_n = y_train #op.stddize(y_test)
             x_n = op.stddize(x_train) #op.stddize(x_test)#nxd
             x_coTrain = op.concat_one_column(x_n)#nxd+1
