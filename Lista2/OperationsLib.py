@@ -3,6 +3,15 @@ import numpy as np
 
 class Operations:
 
+
+    @staticmethod
+    def sum_covm(x,mi):
+        res = np.zeros((mi.shape[0],mi.shape[0]))
+        for i in range(x.shape[0]):
+            vec = x[i] - mi
+            res += vec @ vec.T
+        return res/x.shape[0]
+
     @staticmethod
     def slice_data(data):
         x = data[: , 0:-1]
