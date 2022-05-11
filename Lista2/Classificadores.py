@@ -1,5 +1,6 @@
 import numpy as np
 from OperationsLib import Operations as op
+from sklearn import metrics
 class Classificadores():
     def __init__(self,file,n_folds):
         self.dataset = np.genfromtxt(file, delimiter=',', skip_header=0)
@@ -35,11 +36,13 @@ class ADG(Classificadores):
                     res.append(0)
                 else:
                     res.append(1)
-            ac = []
-            #print(y_train.T)
-            for k in range(len(res)):
-                ac.append(res[k]==int(y_test.T[0][k]))
-            print(ac.count(1)/len(ac))
+            print(f"Summary for the classifier ADG with accuracy {metrics.accuracy_score(y_test,res):.2f}")
+            print(metrics.classification_report(y_test, res))
+            #calculo da acuracia
+            #ac = []
+            #for k in range(len(res)):
+            #    ac.append(res[k]==int(y_test.T[0][k]))
+            #print(ac.count(1)/len(ac))
 
 
             
@@ -67,6 +70,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-        
-
