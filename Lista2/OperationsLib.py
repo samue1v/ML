@@ -3,19 +3,22 @@ import numpy as np
 class Operations:
 
 
-    #@staticmethod
-    #def calc_pct(pred,comp):
+    @staticmethod
+    def calc_var(x,mi):
+        s = 0
+        for i in range(x.shape[0]):
+            s += np.sum(np.power(x[i] - mi,2))
+        return s/(x.shape[0]-1)
 
 
 
     @staticmethod
     def sum_covm(x,mi):
-        res = np.zeros((mi.shape[0],mi.shape[0]))
-        
+        res = np.zeros((mi.shape[0],mi.shape[0]))        
         for i in range(x.shape[0]):
             vec = x[i] - mi
             res += np.array([vec]).T @ np.array([vec])
-        return res/(x.shape[1]-1)
+        return res/(x.shape[0]-1)
 
     @staticmethod
     def slice_data(data):
