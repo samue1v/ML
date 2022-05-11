@@ -1,5 +1,6 @@
 import numpy as np
 from OperationsLib import Operations as op
+from sklearn import metrics
 
 class LogisticReg:
     def __init__(self,file,n_folds):
@@ -46,9 +47,10 @@ class GDLog(LogisticReg):
                     else:
                         y_hatTest[i] = 0
                     self.results_vec.append(int(y_hatTest[i])==int(y_test[i]))
-            
-            c = self.results_vec.count(1)/len(self.results_vec)
-            print(c)
+            print(f"Summary for the classifier Log with accuracy {metrics.accuracy_score(y_test,y_hatTest):.2f}")
+            print(metrics.classification_report(y_test, y_hatTest))
+            #c = self.results_vec.count(1)/len(self.results_vec)
+            #print(c)
         
 
 
