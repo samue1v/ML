@@ -1,16 +1,21 @@
-import stat
 import numpy as np
 
 class Operations:
 
 
+    #@staticmethod
+    #def calc_pct(pred,comp):
+
+
+
     @staticmethod
     def sum_covm(x,mi):
         res = np.zeros((mi.shape[0],mi.shape[0]))
+        
         for i in range(x.shape[0]):
             vec = x[i] - mi
-            res += vec @ vec.T
-        return res/x.shape[0]
+            res += np.array([vec]).T @ np.array([vec])
+        return res/(x.shape[1]-1)
 
     @staticmethod
     def slice_data(data):
@@ -31,7 +36,6 @@ class Operations:
         fold_lst = []
         fold_size = int(dataset.shape[0]/n_folds)
         fold_remainder = (dataset.shape[0]%n_folds)
-        print(fold_remainder)
         for i in range(n_folds):
             floor = i*fold_size
             fold_lst.append(dataset[floor:floor+fold_size])
