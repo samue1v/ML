@@ -6,10 +6,16 @@ class Classificadores():
         self.dataset = np.genfromtxt(file, delimiter=',', skip_header=0)
         self.n_folds = n_folds
         self.folds = op.Kfold(self.dataset,self.n_folds)
+        self.acuracia = []
+        self.revoc = []
+        self.precisao = []
+        self.f1 = []
 
 class ADG(Classificadores):
     def __init__(self,file,n_folds):
         super().__init__(file,n_folds)
+        self.algo = "ADG"
+        
     
     def ADGstep(self):
         for i in range(self.n_folds):
@@ -26,16 +32,10 @@ class ADG(Classificadores):
             indepc1 = s_train[r1][:,0:-1]
             c0_mi = np.mean(indepc0,axis=0)#media apenas as independentes para r[-1] = 0
             c1_mi = np.mean(indepc1,axis=0)
-            #print(indepc0.shape)
-            #break
             m_cov0 = op.sum_covm(indepc0,c0_mi)
             m_cov1 = op.sum_covm(indepc1,c1_mi)
             priori0 = np.count_nonzero(y_train == 0)/y_train.shape[0]
             priori1 = 1-priori0
-            #print(y_train.shape[1])
-            #print(priori0)
-            #break
-            #print(y_train)
             pc0 = ADG.ADGprob(x_test_std,m_cov0,c0_mi,priori0)
             pc1 = ADG.ADGprob(x_test_std,m_cov1,c1_mi,priori1)            
             res = []
@@ -44,8 +44,10 @@ class ADG(Classificadores):
                     res.append(0)
                 else:
                     res.append(1)
-            print(f"Summary for the classifier ADG with accuracy {metrics.accuracy_score(y_test,res):.2f}")
-            print(metrics.classification_report(y_test, res))
+            self.revoc.append(metrics.recall_score(y_test,res))
+            self.acuracia.append(metrics.accuracy_score(y_test,res))
+            self.precisao.append(metrics.precision_score(y_test,res))
+            self.f1.append(metrics.f1_score(y_test,res))
     
     @classmethod
     def ADGprob(cls,indep,m_cov,mi,priori):
@@ -64,6 +66,7 @@ class ADG(Classificadores):
 class NBG(Classificadores):
     def __init__(self,file,n_folds):
         super().__init__(file,n_folds)
+        self.algo = "NBG"
     
     def NBGstep(self):
         for i in range(self.n_folds):
@@ -80,8 +83,8 @@ class NBG(Classificadores):
             indepc1 = s_train[r1][:,0:-1]
             c0_mi = np.mean(indepc0,axis=0)#media apenas as independentes para r[-1] = 0
             c1_mi = np.mean(indepc1,axis=0)
-            var0 = op.calc_var(indepc0,c0_mi)
-            var1 = op.calc_var(indepc1,c1_mi)
+            var0 = np.var(indepc0,axis=0)
+            var1 = np.var(indepc1,axis=0)
             priori0 = np.count_nonzero(y_train == 0)/y_train.shape[0]
             priori1 = 1-priori0
             pc0 = NBG.NBGprob(x_test_std,var0,c0_mi,priori0)
@@ -92,35 +95,35 @@ class NBG(Classificadores):
                     res.append(0)
                 else:
                     res.append(1)
-            print(f"Summary for the classifier NBG with accuracy {metrics.accuracy_score(y_test,res):.2f}")
-            print(metrics.classification_report(y_test, res))
+            self.revoc.append(metrics.recall_score(y_test,res))
+            self.acuracia.append(metrics.accuracy_score(y_test,res))
+            self.precisao.append(metrics.precision_score(y_test,res))
+            self.f1.append(metrics.f1_score(y_test,res))
     
     @classmethod
     def NBGprob(cls,indep,var,mi,priori):
         prob_vec = []
-        print(f"var:{var.shape}")
         for k in range(indep.shape[0]):
             sum = 0
             for i in range(indep.shape[1]):
-                #print((indep[k,[i]][0]-mi[i]))
-                sum += np.log(2*np.pi*var) + ((indep[k,[i]][0]-mi[i])**2)/var[i]
+                sum += np.log(2*np.pi*var[i]) + ((indep[k][i]-mi[i])**2)/var[i]
             prob_vec.append(-0.5*sum + np.log(priori))
         return prob_vec
 
-
-
-
-            
-    
-
-
-            
     
 def main():
-    #adg = ADG("teste2.csv",2)
-    #adg = ADG("breastcancer.csv",10)
-    #adg.ADGstep()
+    adg = ADG("breastcancer.csv",10)
+    adg.ADGstep()
+    op.show_score((adg.acuracia),adg.algo,"Acuracia")
+    op.show_score((adg.revoc),adg.algo,"Revocação")
+    op.show_score((adg.precisao),adg.algo,"precisão")
+    op.show_score((adg.f1),adg.algo,"F1-Score")
     nbg = NBG("breastcancer.csv",10)
+
     nbg.NBGstep()
+    op.show_score(nbg.acuracia,nbg.algo,"Acuracia")
+    op.show_score(nbg.revoc,nbg.algo,"Revocação")
+    op.show_score(nbg.precisao,nbg.algo,"precisão")
+    op.show_score(nbg.f1,nbg.algo,"F1-Score")
 if __name__ == "__main__":
     main()

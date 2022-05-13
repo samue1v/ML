@@ -2,11 +2,11 @@ import numpy as np
 
 class Operations:
 
-
-    #@staticmethod
-    #def calc_pct(pred,comp):
-
-
+    @staticmethod
+    def show_score(score,algo,score_name):
+        m = np.mean(score)
+        v = np.var(score)
+        print(f"Para {algo}: A media do(a) {score_name} foi {m:.2f} com variancia {v:.2f}")
 
     @staticmethod
     def calc_var(x,mi):
@@ -23,7 +23,7 @@ class Operations:
         for i in range(x.shape[0]):
             vec = x[i] - mi
             res += np.array([vec]).T @ np.array([vec])
-        return res/(x.shape[0]-1)
+        return res/(x.shape[1]-1)
 
     @staticmethod
     def slice_data(data):
