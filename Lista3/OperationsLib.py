@@ -1,6 +1,23 @@
 import numpy as np
 
 class Operations:
+    
+    @staticmethod
+    def find_most_freq(k_near_list):
+        d = {"nil":-1}
+        maior="nil"
+        maiornum=-1
+        for i in k_near_list:
+            if str(i) in d:
+                d[str(i)]+=1
+            else:
+                d[str(i)]=1
+            if d[str(i)]>=d[maior]:
+                maior = str(i)
+                maiornum=i
+            #print(d)
+
+        return maiornum
 
     @staticmethod
     def show_score(score,algo,score_name):
@@ -54,7 +71,7 @@ class Operations:
     @staticmethod
     def stddize(matrix):
         mean = (matrix.mean(axis=0))
-        m_std = np.divide((matrix-mean),(matrix.std(axis=0)))
+        m_std = np.divide((matrix-mean),(matrix.std(axis=0)*np.ones((matrix.shape[0],matrix.shape[1]))))
         return m_std
 
     @staticmethod
